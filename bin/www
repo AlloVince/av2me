@@ -5,7 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('blog:server');
+var debug = require('debug')('av2me:server');
 var http = require('http');
 
 /**
