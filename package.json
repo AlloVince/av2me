@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "node-dev ./bin/www",
+    "dev": "nodemon --ignore 'node_modules/*' --exec babel-node ./bin/www",
+    "start": "NODE_ENV=production node ./bin/www",
     "lint": "eslint app.js",
-    "start": "nodemon --ignore 'node_modules/*' --exec babel-node ./bin/www",
-    "auto-start": "nodemon --exec \"npm run lint && npm start\" --ignore public/js"
+    "build": "babel -d ./build ./src -s"
   },
   "dependencies": {
     "body-parser": "~1.13.2",

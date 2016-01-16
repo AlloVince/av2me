@@ -10,11 +10,20 @@ async function sleep(timeout) {
     });
 }
 
+async function getMovies() {
+    return new Promise(function(resolve, reject) {
+        request('https://api.douban.com/v2/movie/top251', function(error, response, body) {
+            if (error) return reject(error);
+            resolve(JSON.parse(body));
+        });
+    });
+}
+
 /* GET home page. */
 router.get('/', async (req, res, next) => {
     console.log('Do some thing, ' + new Date());
-    await sleep(3000);
-    console.log('Do other things, ' + new Date());
+    let moveis = await getMovies(3000);
+    console.log(moveis);
     res.render('index', {title: 'Express'});
 });
 
