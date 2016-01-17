@@ -22,7 +22,7 @@ async function getMovies() {
 /* GET home page. */
 router.get('/', async (req, res, next) => {
     console.log('Do some thing, ' + new Date());
-    let moveis = await getMovies(3000);
+    let moveis = await getMovies();
     console.log(moveis);
     res.render('index', {title: 'Express'});
 });

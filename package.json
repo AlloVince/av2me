@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "nodemon --ignore 'node_modules/*' --exec babel-node ./bin/www",
+    "prestart": "npm run build",
     "start": "NODE_ENV=production node ./bin/www",
-    "lint": "eslint app.js",
+    "lint": "eslint src/app.js",
     "build": "babel -d ./build ./src -s"
   },
   "dependencies": {
