@@ -60,7 +60,7 @@ async function toSwaggerDocs(annotations, dist = __dirname + '/ui/docs.json') {
 
 const app = express();
 let port = process.argv[ 2 ] || 15638;
-let sourceFiles = path.join(__dirname, '/source/*.js');
+let sourceFiles = path.join(__dirname, '/../*.js');
 
 app.get('/', (req, res) => {
     let index = __dirname + '/../node_modules/swagger-ui/dist/index.html';

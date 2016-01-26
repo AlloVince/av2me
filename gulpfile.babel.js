@@ -4,7 +4,7 @@ import babel from "gulp-babel";
 import path from "path";
 
 const paths = {
-    es6: [ './src/**/*.es6' ],
+    es6: [ './src/**/*.js' ],
     es5: './build',
     // Must be absolute or relative to source map
     sourceRoot: path.join(__dirname, 'src')

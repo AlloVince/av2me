@@ -8,7 +8,9 @@ module.exports = function (sequelize, DataTypes) {
             autoIncrement: false,
             primaryKey: true,
             defaultValue: null
-        },
+        }
+        /*
+        ,
         realName: {
             type: DataTypes.STRING,
             allowNull: true,
@@ -107,6 +109,7 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: false,
             defaultValue: null
         }
+        */
     }, {
         timestamps: false,
         freezeTableName: true,

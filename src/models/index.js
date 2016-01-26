@@ -11,7 +11,8 @@ let db = {};
 fs
     .readdirSync(__dirname)
     .filter((file) => {
-        return (file.indexOf(".") !== 0) && (file.split('.')[0] !== "index");
+        let fileArray = file.split('.');
+        return (file.indexOf(".") !== 0) && ([ 'js', 'es6' ].indexOf(fileArray.pop()) !== -1) && (fileArray[ 0 ] !== "index");
     })
     .forEach((file) => {
         var model = sequelize.import(path.join(__dirname, file));
