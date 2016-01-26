@@ -1,5 +1,5 @@
 "use strict";
-import 'babel-polyfill'; //To support ES2015 under production env
+import 'babel-polyfill';
 import express      from 'express';
 import path         from 'path';
 import favicon      from 'serve-favicon';
@@ -8,9 +8,10 @@ import cookieParser from 'cookie-parser';
 import bodyParser   from 'body-parser';
 
 import routes       from './routes/index';
-import users        from './routes/users'
+import users        from './routes/users';
 
 let app = express();
+
 
 app.set('views', path.join(__dirname, '/../views'));
 app.set('view engine', 'jade');
@@ -40,6 +41,7 @@ if ( app.get('env') === 'development' ) {
         });
     });
 }
+
 
 app.use((err, req, res, next) => {
     res.status(err.status || 500);

@@ -1,0 +1,20 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Avnpc API",
+        "description": "Avnpc API for app",
+        "version": "1.0"
+    },
+    "produces": [
+        "application/json"
+    ],
+    "host": "api.avnpc.com",
+    "basePath": "/v1",
+    "schemes": [
+        "http"
+    ],
+    "paths": {
+    },
+    "definitions": {
+    }
+}
