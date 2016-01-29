@@ -3,6 +3,9 @@
     "dialect": "mysql",
     "port": 3306,
     "database": "fmarket",
+    "dialectOptions": {
+      "timeout":3
+    },
     "replication": {
       "write": {
         "host": "127.0.0.1",

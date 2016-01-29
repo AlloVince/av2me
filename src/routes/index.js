@@ -1,5 +1,6 @@
 import express from 'express';
 import request from 'request';
+import wrapper      from '../utils/wrapper';
 let router = express.Router();
 
 async function getMovies() {
@@ -11,11 +12,11 @@ async function getMovies() {
     });
 }
 
-router.get('/', async (req, res, next) => {
-    console.log('Do some thing, ' + new Date());
-    let moveis = await getMovies();
-    console.log(moveis);
+router.get('/', wrapper(async (req, res, next) => {
+    //console.log('Do some thing, ' + new Date());
+    //let moveis = await getMovies();
+    //console.log(moveis);
     res.render('index', {title: 'Express'});
-});
+}));
 
 module.exports = router;
