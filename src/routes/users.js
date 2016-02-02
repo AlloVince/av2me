@@ -5,9 +5,9 @@ import wrapper      from '../utils/wrapper';
 let router = express.Router();
 
 router.get('/', wrapper(async (req, res, next) => {
-    //throw new Error('abc');
     let user = await models.WalletUsers.findOne();
     console.log(user)
+    throw new Error('abc');
     res.send('respond with a resource');
 }));
 

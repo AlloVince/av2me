@@ -4,20 +4,20 @@
   "private": true,
   "scripts": {
     "dev": "nodemon --ignore 'node_modules/*' --exec babel-node ./bin/www",
+    "swagger": "npm run build && node build/swagger/app.js",
     "prestart": "npm run build",
     "start": "NODE_ENV=production node ./bin/www",
     "lint": "eslint src/app.js",
-    "build": "babel -d ./build ./src -s"
+    "build": "gulp babel && gulp copy-json"
   },
   "dependencies": {
-    "bluebird": "^3.1.5",
     "body-parser": "~1.13.2",
     "cookie-parser": "~1.3.5",
     "cors": "^2.7.1",
     "debug": "^2.2.0",
     "express": "~4.13.1",
     "jade": "~1.11.0",
-    "jsdoc-parse": "^1.2.6",
+    "js-yaml": "^3.5.2",
     "morgan": "~1.6.1",
     "mysql": "^2.10.2",
     "redis": "^2.4.2",
@@ -27,10 +27,16 @@
     "swagger-ui": "^2.1.4"
   },
   "devDependencies": {
+    "acorn": "^2.7.0",
+    "acorn-es7-plugin": "^1.0.11",
     "babel-cli": "^6.4.0",
     "babel-polyfill": "^6.3.14",
     "babel-preset-es2015": "^6.3.13",
+    "babel-preset-stage-1": "^6.3.13",
+    "babel-preset-stage-2": "^6.3.13",
     "babel-preset-stage-3": "^6.3.13",
+    "doctrine": "^1.1.0",
+    "glob": "^6.0.4",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.1",
     "gulp-cli": "^1.1.0",

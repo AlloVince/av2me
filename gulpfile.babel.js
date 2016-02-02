@@ -13,7 +13,7 @@ gulp.task('babel', () => {
     return gulp.src(paths.es6)
         .pipe(sourceMaps.init())
         .pipe(babel({
-            presets: [ 'es2015', 'stage-3' ]
+            presets: [ 'es2015', 'stage-1' ]
         }))
         .pipe(sourceMaps.write('.', {
             includeContent: false,
@@ -21,6 +21,12 @@ gulp.task('babel', () => {
         }))
         .pipe(gulp.dest(paths.es5));
 });
+
+gulp.task('copy-json', function() {
+  return gulp.src(['./src/**/*.json'])
+    .pipe(gulp.dest('./build'));
+});
+
 gulp.task('watch', [ 'babel' ], () => {
     gulp.watch(paths.es6, [ 'babel' ]);
 });
