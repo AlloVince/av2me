@@ -13,7 +13,7 @@ gulp.task('babel', () => {
     return gulp.src(paths.es6)
         .pipe(sourceMaps.init())
         .pipe(babel({
-            presets: [ 'es2015', 'stage-1' ]
+            presets: [ 'es2015', 'stage-3' ]
         }))
         .pipe(sourceMaps.write('.', {
             includeContent: false,
@@ -23,7 +23,7 @@ gulp.task('babel', () => {
 });
 
 gulp.task('copy-json', function() {
-  return gulp.src(['./src/**/*.json'])
+  return gulp.src(['./src/**/*.json', './src/**/.gitignore'])
     .pipe(gulp.dest('./build'));
 });
 

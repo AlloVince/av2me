@@ -1,6 +1,6 @@
 'use strict';
 
-//import 'babel-polyfill';
+import 'babel-polyfill';
 import fs from "fs";
 import doctrine from "doctrine";
 import * as acorn from "acorn/dist/acorn.js";
