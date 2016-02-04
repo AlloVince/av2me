@@ -1,6 +1,8 @@
 {
-  "presets": ["stage-1", "es2015"],
+  "presets": ["stage-3", "es2015"],
   "plugins": [
-      ["transform-decorators-legacy"],
-   ]
+      ["babel-plugin-transform-builtin-extend", {
+          globals: ["Error"]
+      }]
+  ]
 }
