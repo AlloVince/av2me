@@ -1,16 +1,31 @@
 "use strict";
-import 'babel-polyfill';
+//import 'babel-polyfill';
 import express      from 'express';
 import path         from 'path';
 import favicon      from 'serve-favicon';
 import logger       from 'morgan';
 import cookieParser from 'cookie-parser';
 import bodyParser   from 'body-parser';
+import {Injector}   from 'di';
+import Request   from 'request';
 
 import routes       from './routes/index';
 import users        from './routes/users';
 
 let app = express();
+
+/*
+@Injector(Request)
+class HttpClient {
+    constructor(request) {
+        this.request = request;
+    }
+}
+
+let injector = new Injector();
+let client = injector.get(Request);
+console.log(client);
+*/
 
 
 app.set('views', path.join(__dirname, '/../views'));

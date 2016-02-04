@@ -34,7 +34,7 @@ async function readFile(path, options = {}) {
     });
 }
 
-async function writFile(content, dist) {
+async function writeFile(content, dist) {
     return new Promise((resolve, reject) => {
         fs.open(dist, 'w', '0777', (error, fd) => {
             if ( error ) {
@@ -110,7 +110,7 @@ app.use(serveStatic(path.join(__dirname, '/ui')));
             }
         }
 
-        await writFile(JSON.stringify(swaggerDoc), distFile);
+        await writeFile(JSON.stringify(swaggerDoc), distFile);
         console.log(`Swagger docs generated as ${distFile}`);
 
         app.listen(port, () => {
