@@ -5,7 +5,7 @@ let assert = chai.assert;
 
 describe('Exception', () => {
     describe('Logic', () => {
-        it('should extends stand', function () {
+        it('should extends stand', () => {
             assert.instanceOf(new exceptions.LogicException(), exceptions.StandardException);
         });
     });
