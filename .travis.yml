@@ -1,0 +1,5 @@
+language: node_js
+node_js:
+  - "4.2.6"
+before_install:
+  - "npm install -g babel-cli gulp eslint babel-eslint eslint-config-airbnb eslint-plugin-react"
