@@ -1,5 +1,8 @@
 # An ES6 based NodeJS + ExpressJS Skeleton
 
+[![Build Status](https://travis-ci.org/AlloVince/av2me.svg?branch=master)](https://travis-ci.org/AlloVince/av2me)
+[![License](https://poser.pugx.org/AlloVince/av2me/license.svg)](https://github.com/AlloVince/av2me)
+
 Purposes
 
 1. Write in ES6, run in ES5, by Babel 6
