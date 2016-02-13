@@ -1,5 +1,6 @@
 import chai from 'chai';
 import * as exceptions from "./../../src/exceptions";
+import {describe, it} from 'mocha/lib/mocha';
 chai.should();
 let assert = chai.assert;
 

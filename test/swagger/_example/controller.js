@@ -1,13 +1,25 @@
-import express from 'express';
-import request from 'request';
-import wrapper      from '../utils/wrapper';
-import {LogicException}      from '../exceptions';
-let router = express.Router();
+'use strict';
 
 /**
- * abc
- * @param a
- * @param b
+ * Standard annotations
+ * @type {{get: router.get}}
+ */
+var router = { get: function() {}};
+
+//Comment
+
+/*
+ * Multi line comments
+ */
+
+//Test empty
+/**
+ * @swagger
+ */
+
+/**
+ * Foo bar
+ * @param foo
  * @returns {Promise}
  * @swagger
  * PriceEstimate:
@@ -18,30 +30,10 @@ let router = express.Router();
  *     currency_code:
  *       type: string
  *       description: "[ISO 4217](http://en.wikipedia.org/wiki/ISO_4217) currency code."
- *     display_name:
- *       type: string
- *       description: Display name of product.
- *     estimate:
- *       type: string
- *       description: Formatted string of estimate in local currency of the start location. Estimate could be a range, a single number (flat rate) or "Metered" for TAXI.
- *     low_estimate:
- *       type: number
- *       description: Lower bound of the estimated price.
- *     high_estimate:
- *       type: number
- *       description: Upper bound of the estimated price.
- *     surge_multiplier:
- *       type: number
- *       description: Expected surge multiplier. Surge is active if surge_multiplier is greater than 1. Price estimate already factors in the surge multiplier.
  */
-async function getMovies(a, b) {
-    return new Promise((resolve, reject) => {
-        request('https://api.douban.com/v2/movie/top251', (error, response, body) => {
-            if ( error ) return reject(error);
-            resolve(JSON.parse(body));
-        });
-    });
-}
+
+var getMovies = function () {
+};
 
 /**
   @swagger
@@ -97,14 +89,9 @@ async function getMovies(a, b) {
            $ref: '#/definitions/Error'
  @throws {LogicException} something wrong
  */
-router.get('/', wrapper(async (req, res, next) => {
-    throw new LogicException();
-    //console.log('Do some thing, ' + new Date());
-    //let moveis = await getMovies();
-    //console.log(moveis);
-    res.render('index', {title: 'Express'});
-}));
 
+router.get('/', function () {
+}());
 
 /**
   @swagger

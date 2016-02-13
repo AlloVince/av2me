@@ -13,7 +13,12 @@ gulp.task('babel', () => {
     return gulp.src(paths.es6)
         .pipe(sourceMaps.init())
         .pipe(babel({
-            presets: [ 'es2015', 'stage-3' ]
+            "presets": [ "stage-3", "es2015" ],
+            "plugins": [
+                [ "babel-plugin-transform-builtin-extend", {
+                    globals: [ "Error" ]
+                } ]
+            ]
         }))
         .pipe(sourceMaps.write('.', {
             includeContent: false,
@@ -22,9 +27,9 @@ gulp.task('babel', () => {
         .pipe(gulp.dest(paths.es5));
 });
 
-gulp.task('copy-json', function() {
-  return gulp.src(['./src/**/*.json', './src/**/.gitignore'])
-    .pipe(gulp.dest('./build'));
+gulp.task('copy-json', function () {
+    return gulp.src([ './src/**/*.json', './src/**/.gitignore' ])
+        .pipe(gulp.dest('./build'));
 });
 
 gulp.task('watch', [ 'babel' ], () => {

@@ -32,6 +32,10 @@ export class StandardException extends Error {
         return parseInt(StandardException.crc32(namespace).toString().substring(0, 5) + '000' + StandardException.hash(className));
     }
 
+    toSwagger() {
+        return {}
+    }
+
     constructor(...args) {
         let [msg, id, code, statusCode] = args;
         super(msg, id);
