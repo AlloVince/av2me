@@ -59,6 +59,32 @@ export default class ExSwagger {
     return ExSwagger._parseAnnotaions(annotations);
   }
 
+  static _doctrineTagToElement(tag) {
+    const { title, description, type } = tag;
+    if (title !== 'swagger') {
+      return {
+        description,
+        type: TYPE_EXCEPTION,
+        value: type ? type.name : TYPE_UNKNOWN
+      };
+    }
+
+    let value = {};
+    let elementType = TYPE_UNKNOWN;
+    try {
+      value = yaml.load(description);
+      const key = Object.keys(value)[0];
+      elementType = key.startsWith('/') ? TYPE_PATH : TYPE_DEFINITION;
+    } catch (e) {
+      //NOTE: Swagger docs 解析错误也不会报错
+    }
+    return {
+      type: elementType,
+      description,
+      value
+    };
+  }
+
   static _parseAnnotaions(annotations) {
     const docs = [];
     for (const annotation of annotations) {
@@ -74,38 +100,15 @@ export default class ExSwagger {
         continue;
       }
       let doc = [];
-      doc = tags.filter(v => {
-        if (v.title && (v.title === 'swagger' || v.title === 'throws') && v.description) {
-          return v;
+      doc = tags.filter(tag => {
+        if (
+          tag.title
+          && (tag.title === 'swagger' || tag.title === 'throws')
+          && tag.description
+        ) {
+          return tag;
         }
-      }).map((v) => {
-        //console.log(v);
-        if (v.title === 'swagger') {
-          let value = {};
-          let description = '';
-          let type = TYPE_UNKNOWN;
-          try {
-            //NOTE: Swagger docs 解析错误也不会报错
-            value = yaml.load(v.description);
-            const key = Object.keys(value)[0];
-            type = key.startsWith('/') ? TYPE_PATH : TYPE_DEFINITION;
-          } catch (e) {
-            //console.log(e)
-            description = v.description;
-          }
-          return {
-            type,
-            //TODO: @swagger 后直接跟字符
-            description,
-            value,
-          };
-        }
-        return {
-          type: TYPE_EXCEPTION,
-          description: v.description,
-          value: v.type.name
-        };
-      });
+      }).map(ExSwagger._doctrineTagToElement);
       if (doc.length > 0) {
         docs.push(doc);
       }
@@ -113,15 +116,9 @@ export default class ExSwagger {
     return docs;
   }
 
-  static async getExceptions() {
-
-  }
-
   static getModels(models, blacklist = []) {
-    //console.log(models);
-    //console.log(blacklist);
     const swaggerModels = new Map();
-    for (let modelName in models) {
+    for (const modelName in models) {
       if (blacklist.includes(modelName)) {
         continue;
       }
@@ -179,9 +176,7 @@ export default class ExSwagger {
   }
 
   getCommonErrors() {
-
   }
-
 
   async exportJson(dist) {
     const files = await ExSwagger.scanFiles(this._annotationPath);
@@ -214,11 +209,11 @@ export default class ExSwagger {
   constructor({
     projectRoot,
     swaggerTemplate,
-    annotationPath = projectRoot + '/**/*.js',
+    annotationPath = `${projectRoot}/**/*.js`,
     exceptionInterface,
     models,
     modelBlacklist,
-    exceptionPath = projectRoot + '/**/exceptions/**/*.js',
+    exceptionPath = `${projectRoot}/**/exceptions/**/*.js`,
     }) {
     this._projectRoot = projectRoot;
     this._swaggerTemplate = swaggerTemplate;

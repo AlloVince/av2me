@@ -106,16 +106,18 @@ router.get('/', wrapper(async (req, res, next) => {
 }));
 
 
+//@formatter:off
 /**
- @swagger
+  @swagger
  Error:
- properties:
- code:
- type: integer
- format: int32
- message:
- type: string
- fields:
- type: string
- */
+   properties:
+     code:
+       type: integer
+       format: int32
+     message:
+       type: string
+     fields:
+       type: string
+*/
+//@formatter:on
 module.exports = router;
