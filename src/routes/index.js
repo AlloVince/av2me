@@ -6,8 +6,6 @@ let router = express.Router();
 
 /**
  * abc
- * @param a
- * @param b
  * @returns {Promise}
  * @swagger
  * PriceEstimate:
@@ -34,17 +32,18 @@ let router = express.Router();
  *       type: number
  *       description: Expected surge multiplier. Surge is active if surge_multiplier is greater than 1. Price estimate already factors in the surge multiplier.
  */
-async function getMovies(a, b) {
-    return new Promise((resolve, reject) => {
-        request('https://api.douban.com/v2/movie/top251', (error, response, body) => {
-            if ( error ) return reject(error);
-            resolve(JSON.parse(body));
-        });
+async function getMovies() {
+  return new Promise((resolve, reject) => {
+    request('https://api.douban.com/v2/movie/top251', (error, response, body) => {
+      if (error) return reject(error);
+      resolve(JSON.parse(body));
     });
+  });
 }
 
+//@formatter:off
 /**
-  @swagger
+ @swagger
  /estimates/price:
    get:
      summary: Price Estimates
@@ -97,25 +96,26 @@ async function getMovies(a, b) {
            $ref: '#/definitions/Error'
  @throws {LogicException} something wrong
  */
+//@formatter:on
 router.get('/', wrapper(async (req, res, next) => {
-    throw new LogicException();
-    //console.log('Do some thing, ' + new Date());
-    //let moveis = await getMovies();
-    //console.log(moveis);
-    res.render('index', {title: 'Express'});
+  throw new LogicException();
+  //console.log('Do some thing, ' + new Date());
+  //let moveis = await getMovies();
+  //console.log(moveis);
+  res.render('index', { title: 'Express' });
 }));
 
 
 /**
-  @swagger
+ @swagger
  Error:
-   properties:
-     code:
-       type: integer
-       format: int32
-     message:
-       type: string
-     fields:
-       type: string
-*/
+ properties:
+ code:
+ type: integer
+ format: int32
+ message:
+ type: string
+ fields:
+ type: string
+ */
 module.exports = router;

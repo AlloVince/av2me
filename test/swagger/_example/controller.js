@@ -1,10 +1,11 @@
-'use strict';
-
 /**
  * Standard annotations
  * @type {{get: router.get}}
  */
-var router = { get: function() {}};
+var router = {
+  get: function () {
+  }
+};
 
 //Comment
 
@@ -35,6 +36,7 @@ var router = { get: function() {}};
 var getMovies = function () {
 };
 
+//@formatter:off
 /**
   @swagger
  /estimates/price:
@@ -89,20 +91,20 @@ var getMovies = function () {
            $ref: '#/definitions/Error'
  @throws {LogicException} something wrong
  */
-
+//@formatter:on
 router.get('/', function () {
 }());
 
 /**
-  @swagger
+ @swagger
  Error:
-   properties:
-     code:
-       type: integer
-       format: int32
-     message:
-       type: string
-     fields:
-       type: string
-*/
+ properties:
+ code:
+ type: integer
+ format: int32
+ message:
+ type: string
+ fields:
+ type: string
+ */
 module.exports = router;

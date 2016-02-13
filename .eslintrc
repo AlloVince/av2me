@@ -1,12 +1,13 @@
 {
-  "parser": "babel-eslint",
-  "env": {
-    "node": true,
-    "es6": true
-  },
+  "extends": "airbnb",
   "rules": {
-    "vars-on-top": 2,
-    "no-undef": 2
-  },
-  "extends": "airbnb"
+    "comma-dangle": [
+      1,
+      "never"
+    ],
+    "spaced-comment": [
+      0,
+      "always"
+    ]
+  }
 }
