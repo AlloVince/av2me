@@ -98,7 +98,7 @@ async function getMovies() {
  */
 //@formatter:on
 router.get('/', wrapper(async (req, res, next) => {
-  throw new LogicException();
+  //throw new LogicException();
   //console.log('Do some thing, ' + new Date());
   //let moveis = await getMovies();
   //console.log(moveis);

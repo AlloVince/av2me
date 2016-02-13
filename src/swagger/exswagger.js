@@ -1,11 +1,8 @@
-'use strict';
-
-import fs from "fs";
-import doctrine from "doctrine";
-import * as acorn from "acorn/dist/acorn";
-import glob from "glob";
-import yaml  from 'js-yaml';
-import path from 'path';
+import fs from 'fs';
+import doctrine from 'doctrine';
+import * as acorn from 'acorn/dist/acorn';
+import glob from 'glob';
+import yaml from 'js-yaml';
 
 const TYPE_PATH = 'path';
 const TYPE_DEFINITION = 'definition';
@@ -31,7 +28,7 @@ export default class ExSwagger {
           return reject(err);
         }
         return resolve(data);
-      })
+      });
     });
   }
 
@@ -43,36 +40,36 @@ export default class ExSwagger {
         }
         return resolve(fs.write(fd, content));
       });
-    })
+    });
   }
 
   static async getAnnotations(files) {
-    let comments = [];
-    for (let filepath of files) {
-      let source = await ExSwagger.readFile(filepath);
+    const comments = [];
+    for (const filepath of files) {
+      const source = await ExSwagger.readFile(filepath);
       acorn.parse(source, {
         onComment: comments
       });
     }
     //Annotations MUST start with double stars
-    return comments.filter((v) => v.type === 'Block' && v.value.startsWith("*\n"));
+    return comments.filter((v) => v.type === 'Block' && v.value.startsWith('*\n'));
   }
 
   static getSwaggerDocs(annotations) {
-    return ExSwagger._parseAnnotaions(annotations)
+    return ExSwagger._parseAnnotaions(annotations);
   }
 
   static _parseAnnotaions(annotations) {
-    let docs = [];
-    for (let annotation of annotations) {
+    const docs = [];
+    for (const annotation of annotations) {
       if (!annotation.value) {
         continue;
       }
       //支持两种注解:
       //1. 所有行首必定为 space*
       //2. 所有行首必定不为 space*
-      let unwrap = annotation.value.startsWith("*\n *") ? true : false;
-      let {tags:tags = []} = doctrine.parse(annotation.value, { unwrap: unwrap });
+      const unwrap = annotation.value.startsWith('*\n *');
+      const { tags: tags = [] } = doctrine.parse(annotation.value, { unwrap });
       if (tags.length < 1) {
         continue;
       }
@@ -81,33 +78,33 @@ export default class ExSwagger {
         if (v.title && (v.title === 'swagger' || v.title === 'throws') && v.description) {
           return v;
         }
-      }).map(v => {
+      }).map((v) => {
         //console.log(v);
         if (v.title === 'swagger') {
           let value = {};
-          let desc = '';
+          let description = '';
           let type = TYPE_UNKNOWN;
           try {
             //NOTE: Swagger docs 解析错误也不会报错
             value = yaml.load(v.description);
-            let key = Object.keys(value)[0];
+            const key = Object.keys(value)[0];
             type = key.startsWith('/') ? TYPE_PATH : TYPE_DEFINITION;
           } catch (e) {
             //console.log(e)
-            desc = v.description;
+            description = v.description;
           }
           return {
-            type: type,
+            type,
             //TODO: @swagger 后直接跟字符
-            description: desc,
-            value: value
-          }
+            description,
+            value,
+          };
         }
         return {
           type: TYPE_EXCEPTION,
           description: v.description,
           value: v.type.name
-        }
+        };
       });
       if (doc.length > 0) {
         docs.push(doc);
@@ -123,29 +120,28 @@ export default class ExSwagger {
   static getModels(models, blacklist = []) {
     //console.log(models);
     //console.log(blacklist);
-    let swaggerModels = new Map();
+    const swaggerModels = new Map();
     for (let modelName in models) {
       if (blacklist.includes(modelName)) {
         continue;
       }
 
-      let model = models[modelName].attributes;
-      let definition = {
+      const model = models[modelName].attributes;
+      const definition = {
         type: 'object',
         properties: {}
       };
-      let requires = [];
-      for (let columnName in model) {
-        let column = model[columnName];
-        let property = {
-          type: "string",
-          format: "int64",
+      const requires = [];
+      for (const columnName in model) {
+        const column = model[columnName];
+        const property = {
+          type: 'string',
+          format: 'int64',
           description: column.comment,
           default: column.defaultValue,
         };
-        console.log(column);
-        if (false === column.allowNull) {
-          requires.push(columnName)
+        if (column.allowNull === false) {
+          requires.push(columnName);
         }
         definition.properties[columnName] = property;
       }
@@ -156,16 +152,16 @@ export default class ExSwagger {
   }
 
   static async scanExceptions(path, exceptionInterface = Error) {
-    let exceptions = [];
-    let files = await ExSwagger.scanFiles(path);
+    const exceptions = [];
+    const files = await ExSwagger.scanFiles(path);
     if (files.length < 1) {
       return exceptions;
     }
-    for (let file of files) {
-      let exceptionsInFile = require(file);
-      for (let exceptionName in exceptionsInFile) {
-        let exceptionClass = exceptionsInFile[exceptionName];
-        let exception = new exceptionClass();
+    for (const file of files) {
+      const exceptionsInFile = require(file);
+      for (const exceptionName in exceptionsInFile) {
+        const exceptionClass = exceptionsInFile[exceptionName];
+        const exception = new exceptionClass();
         if (exception instanceof exceptionInterface) {
           exceptions.push(exception);
         }
@@ -175,11 +171,11 @@ export default class ExSwagger {
   }
 
   exceptionClassToSwagger(exceptionClass) {
-    let exception = new exceptionClass();
+    const exception = new exceptionClass();
     return {
-      'code': exception.code(),
-      'statusCode': exception.statusCode
-    }
+      code: exception.code(),
+      statusCode: exception.statusCode
+    };
   }
 
   getCommonErrors() {
@@ -188,34 +184,28 @@ export default class ExSwagger {
 
 
   async exportJson(dist) {
-    //@formatter:off
-    /*
-    let files = await ExSwagger.scanFiles(this._annotationPath);
-    let annotations = await ExSwagger.getAnnotations(files);
-    let docs = ExSwagger.getSwaggerDocs(annotations);
-    let template = this._swaggerTemplate;
+    const files = await ExSwagger.scanFiles(this._annotationPath);
+    const annotations = await ExSwagger.getAnnotations(files);
+    const docs = ExSwagger.getSwaggerDocs(annotations);
+    const template = this._swaggerTemplate;
     let key = '';
-    for (let section of docs) {
-      for (let element of section) {
-
-        if ( element.type === TYPE_PATH ) {
-          key = Object.keys(element.value)[ 0 ];
-          template.paths[ key ] = element.value[ key ];
-        } else if ( element.type === TYPE_DEFINITION ) {
-          key = Object.keys(element.value)[ 0 ];
-          template.definitions[ key ] = element.value[ key ];
-        } else if ( element.type === 'exception' ) {
+    for (const section of docs) {
+      for (const element of section) {
+        if (element.type === TYPE_PATH) {
+          key = Object.keys(element.value)[0];
+          template.paths[key] = element.value[key];
+        } else if (element.type === TYPE_DEFINITION) {
+          key = Object.keys(element.value)[0];
+          template.definitions[key] = element.value[key];
+        } else if (element.type === 'exception') {
           //this.exceptionClassToSwagger();
         }
-
       }
     }
-    */
-    //@formatter:on
     let models = ExSwagger.getModels(this._models, this._modelBlacklist);
     //console.log(models);
 
-    //return await ExSwagger.writeFile(JSON.stringify(template), dist);
+    return await ExSwagger.writeFile(JSON.stringify(template), dist);
 
     //model support
     //exception support

@@ -4,7 +4,7 @@
     "port": 3306,
     "database": "fmarket",
     "dialectOptions": {
-      "timeout":3
+      "timeout": 3
     },
     "replication": {
       "write": {

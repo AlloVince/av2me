@@ -1,12 +1,9 @@
-"use strict";
-
-module.exports = (fn) => {
-    return (req, res, next) => {
-        Promise
-            .resolve(fn(req, res, next))
-            .catch(next);
-    }
+const wrapper = (fn) => {
+  return (req, res, next) => {
+    Promise
+      .resolve(fn(req, res, next))
+      .catch(next);
+  };
 };
 
-
-
+export default wrapper;
