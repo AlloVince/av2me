@@ -4,12 +4,11 @@ import path from 'path';
 import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
-//import Request from 'request';
 import routes from './routes/index';
 import users from './routes/users';
+import { StandardException, ResourceNotFoundException } from './exceptions';
 
 const app = express();
-
 
 app.set('views', path.join(__dirname, '/../views'));
 app.set('view engine', 'jade');
@@ -23,25 +22,34 @@ app.use(express.static(path.join(__dirname, '/../public')));
 app.use('/', routes);
 app.use('/users', users);
 
-// using arrow syntax
 app.use((req, res, next) => {
-  const err = new Error('Not Found');
-  err.status = 404;
+  const err = new ResourceNotFoundException();
   next(err);
 });
 
 if (app.get('env') === 'development') {
-  app.use((err, req, res) => {
-    res.status(err.status || 500);
-    res.render('error', {
+  //NOTE: 最后的next是必须的
+  app.use((err, req, res, next) => {
+    if (!(err instanceof StandardException)) {
+      return res.status(500).json({
+        code: -1,
+        message: err.message,
+        errors: [],
+        stack: err.stack
+      });
+    }
+    res.status(err.statusCode).json({
+      code: err.code(),
       message: err.message,
-      error: err
+      errors: [],
+      stack: err.stack
     });
   });
 }
 
 
-app.use((err, req, res) => {
+//NOTE: 最后的next是必须的
+app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,

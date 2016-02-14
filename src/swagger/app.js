@@ -12,6 +12,7 @@ const distFile = `${__dirname}/ui/docs.json`;
 const swagger = new ExSwagger({
   models,
   projectRoot: `${__dirname}/../../build`,
+  exceptionPath: `${__dirname}/../exceptions`,  //这里的exception与exception interface需要保持在同一文件
   exceptionInterface: exceptions.StandardException,
   modelBlacklist: ['sequelize', 'Sequelize'],
   swaggerTemplate: require('./config/config.json'),

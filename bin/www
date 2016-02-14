@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-var app = process.env.NODE_ENV == 'production' ? require('../build/app') : require('../src/app');
+var app = process.env.NODE_ENV === 'production' ? require('../build/app') : require('../src/app');
 var debug = require('debug')('av2me:server');
 var http = require('http');
 

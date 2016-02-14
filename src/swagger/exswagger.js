@@ -8,8 +8,49 @@ const TYPE_PATH = 'path';
 const TYPE_DEFINITION = 'definition';
 const TYPE_EXCEPTION = 'exception';
 const TYPE_UNKNOWN = 'unknown';
+
+//Sequelize types: http://docs.sequelizejs.com/en/latest/api/datatypes/
+//Swagger Data Types: http://swagger.io/specification/
+const typeMapping = {
+  BIGINT: 'integer',
+  INTEGER: 'integer',
+  FLOAT: 'number',
+  DOUBLE: 'number',
+  DECIMAL: 'number',
+  BOOLEAN: 'boolean',
+  CHAR: 'string',
+  STRING: 'string',
+  TEXT: 'string',
+  REAL: 'string',
+  TIME: 'string',
+  DATE: 'string',
+  DATEONLY: 'string',
+  HSTORE: 'string',
+  JSON: 'string',
+  JSONB: 'string',
+  NOW: 'string',
+  BLOB: 'string',
+  UUID: 'string',
+  UUIDV1: 'string',
+  UUIDV4: 'string',
+  VIRTUAL: 'string',
+};
+
+const defaultValueHandlers = {
+  integer: v => parseInt(v, 10),
+  boolean: v => Boolean(parseInt(v, 10)),
+  number: v => parseFloat(v),
+  default: v => v
+};
+
 export default class ExSwagger {
 
+  /**
+   * Get file path array by glob
+   * @param path
+   * @param options
+   * @returns {Promise}
+   */
   static async scanFiles(path, options = {}) {
     return new Promise((resolve, reject) => {
       glob(path, options, (err, files) => {
@@ -21,6 +62,12 @@ export default class ExSwagger {
     });
   }
 
+  /**
+   * Get file content
+   * @param path
+   * @param options
+   * @returns {Promise}
+   */
   static async readFile(path, options = {}) {
     return new Promise((resolve, reject) => {
       fs.readFile(path, options, (err, data) => {
@@ -32,6 +79,12 @@ export default class ExSwagger {
     });
   }
 
+  /**
+   * Write content to file
+   * @param content
+   * @param dist
+   * @returns {Promise}
+   */
   static async writeFile(content, dist) {
     return new Promise((resolve, reject) => {
       fs.open(dist, 'w', '0777', (error, fd) => {
@@ -43,6 +96,12 @@ export default class ExSwagger {
     });
   }
 
+  /**
+   * Get annotations from comments
+   * An annotation MUST start with double stars
+   * @param files
+   * @returns {Array.<string>}
+   */
   static async getAnnotations(files) {
     const comments = [];
     for (const filepath of files) {
@@ -116,40 +175,47 @@ export default class ExSwagger {
     return docs;
   }
 
+  static _modelToSwagger(model) {
+    const definition = {
+      type: 'object',
+      properties: {}
+    };
+    const requires = [];
+    for (const columnName in model) {
+      const column = model[columnName];
+      const swaggerType = typeMapping[column.type.key];
+      const property = {
+        type: swaggerType,
+        description: column.comment
+      };
+      if (column.defaultValue) {
+        const defaultValueHandler = defaultValueHandlers[swaggerType] ?
+          defaultValueHandlers[swaggerType] : defaultValueHandlers.default;
+        property.default = defaultValueHandler(column.defaultValue);
+      }
+      if (column.allowNull === false) {
+        requires.push(columnName);
+      }
+      definition.properties[columnName] = property;
+    }
+    definition.required = requires;
+    return definition;
+  }
+
   static getModels(models, blacklist = []) {
     const swaggerModels = new Map();
     for (const modelName in models) {
       if (blacklist.includes(modelName)) {
         continue;
       }
-
-      const model = models[modelName].attributes;
-      const definition = {
-        type: 'object',
-        properties: {}
-      };
-      const requires = [];
-      for (const columnName in model) {
-        const column = model[columnName];
-        const property = {
-          type: 'string',
-          format: 'int64',
-          description: column.comment,
-          default: column.defaultValue,
-        };
-        if (column.allowNull === false) {
-          requires.push(columnName);
-        }
-        definition.properties[columnName] = property;
-      }
-      definition.required = requires;
-      swaggerModels.set(modelName, definition);
+      const model = ExSwagger._modelToSwagger(models[modelName].attributes);
+      swaggerModels.set(modelName, model);
     }
     return swaggerModels;
   }
 
   static async scanExceptions(path, exceptionInterface = Error) {
-    const exceptions = [];
+    let exceptions = {};
     const files = await ExSwagger.scanFiles(path);
     if (files.length < 1) {
       return exceptions;
@@ -158,20 +224,35 @@ export default class ExSwagger {
       const exceptionsInFile = require(file);
       for (const exceptionName in exceptionsInFile) {
         const exceptionClass = exceptionsInFile[exceptionName];
-        const exception = new exceptionClass();
+        const exception = new exceptionClass(exceptionName);
         if (exception instanceof exceptionInterface) {
-          exceptions.push(exception);
+          exceptions[exceptionName] = exception;
         }
       }
     }
     return exceptions;
   }
 
-  exceptionClassToSwagger(exceptionClass) {
-    const exception = new exceptionClass();
+  static _exceptionClassToSwagger(exception) {
+    //const exception = new exceptionClass('foobar');
     return {
-      code: exception.code(),
-      statusCode: exception.statusCode
+      properties: {
+        code: {
+          type: 'integer',
+          format: 'int64'
+        },
+        message: {
+          type: 'string'
+        }
+      },
+      required: [
+        'code',
+        'message'
+      ],
+      example: {
+        code: exception.code(),
+        message: exception.message
+      }
     };
   }
 
@@ -183,23 +264,40 @@ export default class ExSwagger {
     const annotations = await ExSwagger.getAnnotations(files);
     const docs = ExSwagger.getSwaggerDocs(annotations);
     const template = this._swaggerTemplate;
+    const exceptions = await ExSwagger.scanExceptions(this._exceptionPath, this._exceptionInterface);
     let key = '';
     for (const section of docs) {
+      let path = null;
       for (const element of section) {
         if (element.type === TYPE_PATH) {
-          key = Object.keys(element.value)[0];
-          template.paths[key] = element.value[key];
+          path = Object.keys(element.value)[0];
+          template.paths[path] = element.value[path];
         } else if (element.type === TYPE_DEFINITION) {
           key = Object.keys(element.value)[0];
           template.definitions[key] = element.value[key];
-        } else if (element.type === 'exception') {
-          //this.exceptionClassToSwagger();
+        } else if (element.type === TYPE_EXCEPTION) {
+          //目前throw一定要定义在path下面
+          const key = element.value;
+          const exception = exceptions[key];
+          //console.log(exceptionClass);
+          if (exception) {
+            template.definitions[key] = ExSwagger._exceptionClassToSwagger(exception);
+            if (path) {
+              template.paths[path].get.responses[exception.statusCode] = {
+                description: element.description,
+                schema: {
+                  $ref: `#/definitions/${key}`
+                }
+              };
+            }
+          }
         }
       }
     }
-    let models = ExSwagger.getModels(this._models, this._modelBlacklist);
-    //console.log(models);
-
+    const models = ExSwagger.getModels(this._models, this._modelBlacklist);
+    models.forEach((model, modelName) => {
+      template.definitions[modelName] = model;
+    });
     return await ExSwagger.writeFile(JSON.stringify(template), dist);
 
     //model support

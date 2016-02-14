@@ -58,22 +58,22 @@ export class StandardException extends Error {
     return parseInt(`${group}000${StandardException.hash(className)}`, 10);
   }
 
-  toSwagger() {
-    return {};
-  }
-
   constructor(...args) {
-    const [msg, id, statusCode] = args;
-    super(msg, id);
+    //unique args
+    const params = Array.from(new Set(args));
+    const [msg, statusCode] = params;
+    if (typeof msg === 'number' || (params.length === 1 && msg.startsWith(path.sep) === true)) {
+      throw new TypeError(`Exception message not allow pure number or a file path`);
+    }
+    super(msg);
     let fileName = __filename;
-    if (this.constructor.name !== 'StandardException') {
+    if (['StandardException', 'Error'].includes(this.constructor.name) === false) {
       const lastArg = args.pop();
       if (!lastArg || lastArg.includes(path.sep) === false) {
-        throw Error(`Exception ${this.constructor.name} require __filename input`);
+        throw new TypeError(`Exception ${this.constructor.name} require __filename input`);
       }
       fileName = lastArg;
     }
-    //console.log(fileName);
     this._code = StandardException.generateCode(this.constructor.name, fileName) || -1;
     this._statusCode = statusCode || 500;
   }
@@ -99,10 +99,49 @@ export class LogicException extends StandardException {
   }
 }
 
+export class InvalidArgumentException extends LogicException {
+}
+
+export class FormInvalidateException extends InvalidArgumentException {
+}
+
+export class HttpRequestInvalidArgumentException extends InvalidArgumentException {
+}
+
+export class UnauthorizedException extends LogicException {
+  constructor(...args) {
+    super(...args);
+    this._statusCode = 401;
+  }
+}
+
+export class ResourceNotFoundException extends LogicException {
+  constructor(...args) {
+    super(...args);
+    this._statusCode = 404;
+  }
+}
+
+export class ResourceConflictedException extends LogicException {
+  constructor(...args) {
+    super(...args);
+    this._statusCode = 409;
+  }
+}
+
 export class RuntimeException extends StandardException {
   constructor(...args) {
     args.push(__filename);
     super(...args);
     this._statusCode = 500;
   }
+}
+
+export class IOException extends RuntimeException {
+}
+
+export class HttpRequestIOException extends IOException {
+}
+
+export class DatabaseIOException extends IOException {
 }

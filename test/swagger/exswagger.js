@@ -2,6 +2,7 @@ import chai from 'chai';
 import { describe, it } from 'mocha/lib/mocha';
 import ExSwagger from '../../src/swagger/exswagger';
 import * as exceptions from '../../src/exceptions';
+import models from './../../src/models';
 chai.should();
 const assert = chai.assert;
 
@@ -34,6 +35,12 @@ describe('ExSwagger', () => {
       assert.isString(docs[1][1].value);
       assert.isString(docs[1][1].description);
       assert.equal('unknown', docs[3][0].type);
+    });
+  });
+  describe('Models', () => {
+    it('Get models', async () => {
+      const swaggerModels = ExSwagger.getModels(models, ['sequelize', 'Sequelize']);
+      console.log(swaggerModels);
     });
   });
   describe('Exceptions', () => {

@@ -1,5 +1,5 @@
 module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('WalletUsers', {
+  return sequelize.define('Users', {
     id: {
       allowNull: false,
       primaryKey: true,
