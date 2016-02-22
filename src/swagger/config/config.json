@@ -8,7 +8,7 @@
     "produces": [
         "application/json"
     ],
-    "host": "api.avnpc.com",
+    "host": "localhost:3000",
     "basePath": "/v1",
     "schemes": [
         "http"

@@ -7,6 +7,23 @@ import path from 'path';
 import express from 'express';
 import serveStatic from 'serve-static';
 
+//For quick debug
+import gulp from 'gulp';
+import babel from 'gulp-babel';
+gulp.task('babel', () => {
+  return gulp.src(__dirname + '/../')
+    .pipe(babel({
+      presets: ['stage-3', 'es2015'],
+      plugins: [
+        ['babel-plugin-transform-builtin-extend', {
+          globals: ['Error']
+        }]
+      ]
+    }))
+    .pipe(gulp.dest(__dirname + '/../../build'));
+});
+gulp.start('babel');
+
 const app = express();
 const distFile = `${__dirname}/ui/docs.json`;
 const swagger = new ExSwagger({

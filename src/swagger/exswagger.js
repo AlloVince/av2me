@@ -144,6 +144,7 @@ export default class ExSwagger {
       const key = Object.keys(value)[0];
       elementType = key.startsWith('/') ? TYPE_PATH : TYPE_DEFINITION;
     } catch (e) {
+      console.log(e);
       //NOTE: Swagger docs 解析错误也不会报错
     }
     return {
@@ -273,6 +274,10 @@ export default class ExSwagger {
     };
   }
 
+  mergeElement(element) {
+
+  }
+
   async exportJson(dist) {
     const files = await ExSwagger.scanFiles(this._annotationPath);
     const annotations = await ExSwagger.getAnnotations(files);
@@ -284,10 +289,15 @@ export default class ExSwagger {
     let key = '';
     for (const section of docs) {
       let path = null;
+      let method = 'get';
       for (const element of section) {
         if (element.type === TYPE_PATH) {
           path = Object.keys(element.value)[0];
-          template.paths[path] = element.value[path];
+          method = Object.keys(element.value[path])[0];
+          if (!template.paths[path]) {
+            template.paths[path] = {};
+          }
+          template.paths[path][method] = element.value[path][method];
         } else if (element.type === TYPE_DEFINITION) {
           key = Object.keys(element.value)[0];
           template.definitions[key] = element.value[key];
@@ -298,8 +308,8 @@ export default class ExSwagger {
           //console.log(exceptionClass);
           if (exception) {
             template.definitions[key] = ExSwagger._exceptionClassToSwagger(exception);
-            if (path) {
-              template.paths[path].get.responses[exception.statusCode] = {
+            if (path && method) {
+              template.paths[path][method].responses[exception.statusCode] = {
                 description: element.description,
                 schema: {
                   $ref: `#/definitions/${key}`
