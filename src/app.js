@@ -1,3 +1,4 @@
+/*eslint no-unused-vars: [2, {"args": "after-used", "argsIgnorePattern": "next"}]*/
 import 'babel-polyfill';
 import express from 'express';
 import path from 'path';

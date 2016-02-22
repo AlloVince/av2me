@@ -36,7 +36,6 @@
   },
   "devDependencies": {
     "acorn": "^2.7.0",
-    "acorn-es7-plugin": "^1.0.11",
     "babel-cli": "^6.4.5",
     "babel-core": "^6.4.5",
     "babel-eslint": "^4.1.8",

@@ -51,4 +51,14 @@ describe('ExSwagger', () => {
       assert.isAtLeast(Object.keys(scannedExceptions).length, 12);
     });
   });
+  describe('Export JSON', () => {
+    it('default properties', async () => {
+      const exSwagger = new ExSwagger({
+        projectRoot: '/foo'
+      });
+      const states = exSwagger.getStates();
+      assert.equal('/foo/**/*.js', states.annotationPath);
+      assert.equal('/foo/**/exceptions/**/*.js', states.exceptionPath);
+    });
+  });
 });
