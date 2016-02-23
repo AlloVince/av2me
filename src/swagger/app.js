@@ -6,23 +6,18 @@ import models from './../models';
 import path from 'path';
 import express from 'express';
 import serveStatic from 'serve-static';
+import childProcess from 'child_process';
 
-//For quick debug
-import gulp from 'gulp';
-import babel from 'gulp-babel';
-gulp.task('babel', () => {
-  return gulp.src(__dirname + '/../')
-    .pipe(babel({
-      presets: ['stage-3', 'es2015'],
-      plugins: [
-        ['babel-plugin-transform-builtin-extend', {
-          globals: ['Error']
-        }]
-      ]
-    }))
-    .pipe(gulp.dest(__dirname + '/../../build'));
-});
-gulp.start('babel');
+async function cli(command) {
+  return new Promise((resolve, reject) => {
+    childProcess.exec(command, {}, (err, stdout, stderr) => {
+      if (stderr) {
+        return reject(stderr);
+      }
+      return resolve(stdout);
+    });
+  });
+}
 
 const app = express();
 const distFile = `${__dirname}/ui/docs.json`;
@@ -32,7 +27,7 @@ const swagger = new ExSwagger({
   exceptionPath: `${__dirname}/../exceptions`,  //这里的exception与exception interface需要保持在同一文件
   exceptionInterface: exceptions.StandardException,
   modelBlacklist: ['sequelize', 'Sequelize'],
-  swaggerTemplate: require('./config/config.json'),
+  swaggerTemplate: require('./config/config.json')
 });
 const port = process.argv[2] || 15638;
 
@@ -50,11 +45,13 @@ app.use(serveStatic(path.join(__dirname, '/ui')));
 
 (async () => {
   try {
-    //console.log(`Start parsing swagger docs from`);
-    //console.log(swager);
-    //console.log(distFile);
+    const command = `cd ${__dirname}/../../ && npm run build`;
+    console.log(`Start run command ${command}`);
+    const msg = await cli(command);
+    console.log(msg);
+    console.log(`Start parsing swagger docs from`);
     await swagger.exportJson(distFile);
-    //console.log(`Swagger docs generated as ${distFile}`);
+    console.log(`Swagger docs generated as ${distFile}`);
 
     app.listen(port, () => {
       console.log(`Swagger app listening on port ${port}!`);

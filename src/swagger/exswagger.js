@@ -11,6 +11,7 @@ export const TYPE_DEFINITION = 'definition';
 export const TYPE_EXCEPTION = 'exception';
 export const TYPE_UNKNOWN = 'unknown';
 
+//Mapping sequelize data types to swagger data types
 //Sequelize types: http://docs.sequelizejs.com/en/latest/api/datatypes/
 //Swagger Data Types: http://swagger.io/specification/
 export const MODEL_TYPE_MAPPING = {
@@ -124,7 +125,7 @@ export default class ExSwagger {
   }
 
   static getSwaggerDocs(annotations) {
-    return ExSwagger._parseAnnotaions(annotations);
+    return ExSwagger._parseAnnotations(annotations);
   }
 
   static _doctrineTagToElement(tag) {
@@ -154,7 +155,7 @@ export default class ExSwagger {
     };
   }
 
-  static _parseAnnotaions(annotations) {
+  static _parseAnnotations(annotations) {
     const docs = [];
     for (const annotation of annotations) {
       if (!annotation.value) {
@@ -274,10 +275,6 @@ export default class ExSwagger {
     };
   }
 
-  mergeElement(element) {
-
-  }
-
   async exportJson(dist) {
     const files = await ExSwagger.scanFiles(this._annotationPath);
     const annotations = await ExSwagger.getAnnotations(files);
@@ -289,7 +286,7 @@ export default class ExSwagger {
     let key = '';
     for (const section of docs) {
       let path = null;
-      let method = 'get';
+      let method = null;
       for (const element of section) {
         if (element.type === TYPE_PATH) {
           path = Object.keys(element.value)[0];

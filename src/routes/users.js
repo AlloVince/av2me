@@ -31,7 +31,8 @@ const router = express.Router();
            properties:
              results:
                type: array
-               $ref: '#/definitions/Users'
+               items:
+                 $ref: '#/definitions/Users'
  @throws {ResourceNotFoundException} When user not exist
  */
 //@formatter:on
@@ -107,9 +108,7 @@ router.get('/:id', wrapper(async (req, res) => {
  */
 //@formatter:on
 router.put('/:id', wrapper(async (req, res) => {
-  console.log(1);
   const id = req.params.id;
-  console.log(id);
   const user = await models.Users.findById(id);
   if (!user) {
     throw new ResourceNotFoundException('User not found');
