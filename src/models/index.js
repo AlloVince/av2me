@@ -6,24 +6,25 @@ const config = require(path.join(__dirname, '..', '..', 'config', 'config.json')
 const sequelize = new Sequelize(config.database, null, null, config);
 const db = {};
 
-//https://github.com/angelxmoreno/sequelize-isunique-validator
+//From https://github.com/angelxmoreno/sequelize-isunique-validator
 Sequelize.prototype.validateIsUnique = (col, msg) => {
   const conditions = { where: {} };
-  msg = (!msg) ? col + ' must be unique' : msg;
+  const message = msg || `${col} must be unique`;
   return function (value, next) {
     const self = this;
-    this.Model.describe().then(function (schema) {
+    this.Model.describe().then((schema) => {
       conditions.where[col] = value;
-      Object.keys(schema).filter(function (field) {
-        return schema[field].primaryKey;
-      }).forEach(function (pk) {
-        conditions.where[pk] = { $ne: self[pk] };
-      });
-    }).then(function () {
-      return self.Model.count(conditions).then(function (found) {
-        return (found !== 0) ? next(msg) : next();
-      });
-    }).catch(next);
+      Object
+        .keys(schema)
+        .filter(field => schema[field].primaryKey)
+        .forEach((pk) => {
+          conditions.where[pk] = { $ne: self[pk] };
+        });
+    }).then(() =>
+      self.Model.count(conditions).then((found) =>
+        (found !== 0) ? next(message) : next()
+      )
+    ).catch(next);
   };
 };
 

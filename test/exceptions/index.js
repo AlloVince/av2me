@@ -19,10 +19,10 @@ describe('Exceptions', () => {
       assert.instanceOf(new exceptions.LogicException('foo'), exceptions.StandardException);
     });
     it('Code', () => {
-      assert.equal(new exceptions.LogicException('foo').code(), 385400003318127193);
+      assert.equal(new exceptions.LogicException('foo').getCode(), 385400003318127193);
     });
     it('Status code', () => {
-      assert.equal(new exceptions.LogicException('foo').statusCode, 400);
+      assert.equal(new exceptions.LogicException('foo').getStatusCode(), 400);
     });
   });
 });
