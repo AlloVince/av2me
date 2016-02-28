@@ -2,7 +2,12 @@ import express from 'express';
 import Model from 'sequelize/lib/model';
 /** @type {Model} models.BlogPosts */
 import models from '../models';
-import { ResourceNotFoundException, InvalidArgumentException, UnauthorizedException, FormInvalidateException } from '../exceptions';
+import {
+  ResourceNotFoundException,
+  InvalidArgumentException,
+  UnauthorizedException,
+  FormInvalidateException
+} from '../exceptions';
 import wrapper from '../utils/wrapper';
 import pagination from '../utils/pagination';
 
@@ -29,8 +34,6 @@ const router = express.Router();
          description: Query limit
          required: false
          type: integer
-         minimum: 1
-         maximum: 100
          default: 10
        - name: order
          in: query
@@ -120,7 +123,7 @@ router.get('/', wrapper(async (req, res) => {
 //@formatter:on
 router.get('/:id', wrapper(async (req, res) => {
   const id = req.params.id;
-  const post = await BlogPosts.findOne({
+  const post = await models.BlogPosts.findOne({
     where: {
       id
     },
@@ -174,21 +177,8 @@ router.get('/:id', wrapper(async (req, res) => {
 router.put('/:id', wrapper(async (req, res) => {
   const id = req.params.id;
   const input = req.body;
-  //try {
-  //  values = JSON.parse(input);
-  //} catch (e) {
-  //  throw new InvalidArgumentException('Input JSON format incorrect');
-  //}
-  //console.log(models.BlogPosts.validate(input));
-
   await models.BlogPosts.upsert(input);
   const post = await models.BlogPosts.findById(id);
-  /*
-  const post = await models.BlogPosts.findById(id);
-  if (!post) {
-    throw new ResourceNotFoundException('Post not found');
-  }
-  */
   res.json(post);
 }));
 
@@ -221,7 +211,6 @@ router.post('/', wrapper(async (req, res) => {
   const input = req.body;
   const errors = await models.BlogPosts.build(input).validate();
   if (errors) {
-    console.log(errors)
     throw new FormInvalidateException(errors);
   }
   const post = await models.BlogPosts.create(input);

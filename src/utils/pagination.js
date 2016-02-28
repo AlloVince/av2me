@@ -1,3 +1,12 @@
+const toUrl = (scheme, host, path, query = {}) => {
+  let queryString = Object.keys(query)
+    .map(key => `${key}=${query[key]}`)
+    .join('&');
+  queryString = queryString === '' ? '' : `?${queryString}`;
+  return `${scheme}://${host}${path}${queryString}`;
+};
+
+
 //@formatter:off
 /**
  @swagger
@@ -24,33 +33,25 @@
 const pagination = ({
   total,
   limit,
-  offset,
-  req,
-  limitKeyword='limit',
-  offsetKeyword='offset'
+  offsetNum,
+  req
   }) => {
-  offset = offset > total ? total : offset;
+  const offset = offsetNum > total ? total : offsetNum;
+  const next = offset + limit > total ? total : offset + limit;
   let prev = offset === 0 ? 0 : offset - limit;
-  let next = offset + limit > total ? total : offset + limit;
   prev = next === total ? total - limit : prev;
-  const path = req.path;
-  const uri = req.url;
   return {
     total,
     offset,
     limit,
-    prev: {
-      limit,
-      offset: prev,
-      path,
-      uri
-    },
-    next: {
-      limit,
-      offset: next,
-      path,
-      uri
-    }
+    prev,
+    next,
+    prevUri: toUrl(
+      req.protocol, req.get('host'), req.baseUrl, Object.assign(req.query, { offset: prev })
+    ),
+    nextUri: toUrl(
+      req.protocol, req.get('host'), req.baseUrl, Object.assign(req.query, { offset: next })
+    )
   };
 };
 
