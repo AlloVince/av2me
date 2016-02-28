@@ -109,6 +109,7 @@ router.get('/:id', wrapper(async (req, res) => {
 //@formatter:on
 router.put('/:id', wrapper(async (req, res) => {
   const id = req.params.id;
+  console.log(id);
   const user = await models.Users.findById(id);
   if (!user) {
     throw new ResourceNotFoundException('User not found');

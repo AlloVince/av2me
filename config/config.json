@@ -2,7 +2,7 @@
   "development": {
     "dialect": "mysql",
     "port": 3306,
-    "database": "fmarket",
+    "database": "av2me",
     "dialectOptions": {
       "timeout": 3
     },

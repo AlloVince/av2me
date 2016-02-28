@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import routes from './routes/index';
 import users from './routes/users';
+import posts from './routes/posts';
 import { StandardException, ResourceNotFoundException } from './exceptions';
 
 const app = express();
@@ -28,6 +29,7 @@ app.use((req, res, next) => {
 });
 app.use('/', routes);
 app.use('/v1/users', users);
+app.use('/v1/posts', posts);
 
 app.use((req, res, next) => {
   const err = new ResourceNotFoundException();
