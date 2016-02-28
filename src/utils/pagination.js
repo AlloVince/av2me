@@ -13,7 +13,7 @@ const toUrl = (scheme, host, path, query = {}) => {
  Pagination:
    type: object
    properties:
-     count:
+     total:
        type: integer
        description: 总数据量
      offset:
@@ -28,18 +28,33 @@ const toUrl = (scheme, host, path, query = {}) => {
      next:
        type: integer
        description: 下页偏移量
+   required:
+   - total
+   - offset
+   - limit
+   - prev
+   - next
+   - prevUri
+   - nextUri
+   example:
+     total: 150
+     offset: 30
+     limit: 15
+     prev: 15
+     next: 45
  */
 //@formatter:on
 const pagination = ({
   total,
   limit,
-  offsetNum,
+  offset,
   req
   }) => {
-  const offset = offsetNum > total ? total : offsetNum;
+  offset = offset > total ? total : offset;
   const next = offset + limit > total ? total : offset + limit;
   let prev = offset === 0 ? 0 : offset - limit;
   prev = next === total ? total - limit : prev;
+  prev = prev < 0 ? 0 : prev; //when limit > total
   return {
     total,
     offset,

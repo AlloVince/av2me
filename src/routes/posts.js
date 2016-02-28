@@ -55,9 +55,7 @@ const router = express.Router();
              - results
            properties:
              pagination:
-               type: object
-               items:
-                 $ref: '#/definitions/Pagination'
+               $ref: '#/definitions/Pagination'
              results:
                type: array
                items:
@@ -70,7 +68,7 @@ router.get('/', wrapper(async (req, res) => {
   offset = offset < 0 ? 0 : offset;
   let limit = parseInt(req.query.limit, 10) || 10;
   limit = limit < 0 ? 0 : limit;
-  limit = limit > 100 ? 100 : limit;
+  limit = limit > 200 ? 200 : limit;
   const defaultOrder = '-created_at';
   let order = req.query.order || defaultOrder;
   const orders = {

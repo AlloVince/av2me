@@ -269,7 +269,7 @@ export default class ExSwagger {
         'message'
       ],
       example: {
-        code: exception.code(),
+        code: exception.getCode(),
         message: exception.message
       }
     };
