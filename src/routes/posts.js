@@ -2,7 +2,7 @@ import express from 'express';
 import Model from 'sequelize/lib/model';
 /** @type {Model} models.BlogPosts */
 import models from '../models';
-import { ResourceNotFoundException, InvalidArgumentException, UnauthorizedException } from '../exceptions';
+import { ResourceNotFoundException, InvalidArgumentException, UnauthorizedException, FormInvalidateException } from '../exceptions';
 import wrapper from '../utils/wrapper';
 import pagination from '../utils/pagination';
 
@@ -219,6 +219,11 @@ router.put('/:id', wrapper(async (req, res) => {
 //@formatter:on
 router.post('/', wrapper(async (req, res) => {
   const input = req.body;
+  const errors = await models.BlogPosts.build(input).validate();
+  if (errors) {
+    console.log(errors)
+    throw new FormInvalidateException(errors);
+  }
   const post = await models.BlogPosts.create(input);
   res.json(post);
 }));

@@ -50,10 +50,10 @@ if (app.get('env') === 'development') {
         stack: err.stack
       });
     }
-    res.status(err.statusCode).json({
-      code: err.code(),
+    res.status(err.getStatusCode()).json({
+      code: err.getCode(),
       message: err.message,
-      errors: [],
+      errors: err.getDetails(),
       stack: err.stack
     });
   });

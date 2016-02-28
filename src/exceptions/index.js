@@ -76,18 +76,23 @@ export class StandardException extends Error {
     }
     this._code = StandardException.generateCode(this.constructor.name, fileName) || -1;
     this._statusCode = statusCode || 500;
+    this._details = [];
   }
 
-  code() {
+  getCode() {
     return this._code;
   }
 
-  set setStatusCode(statusCode) {
+  setStatusCode(statusCode) {
     this._statusCode = statusCode;
   }
 
-  get statusCode() {
+  getStatusCode() {
     return this._statusCode;
+  }
+
+  getDetails() {
+    return this._details;
   }
 }
 
@@ -103,6 +108,17 @@ export class InvalidArgumentException extends LogicException {
 }
 
 export class FormInvalidateException extends InvalidArgumentException {
+  constructor(...args) {
+    let formErrors = {};
+    if (args.length > 0 && typeof args[0] === 'object') {
+      formErrors = args.shift();
+      if (args.length === 0) {
+        args = ['Form validation failed'];
+      }
+    }
+    super(...args);
+    this._details = formErrors.errors;
+  }
 }
 
 export class HttpRequestInvalidArgumentException extends InvalidArgumentException {

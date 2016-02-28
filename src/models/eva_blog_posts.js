@@ -5,7 +5,7 @@ import Model from 'sequelize/lib/model';
 
 /**
  * @param sequelize
- * @param DataTypes
+ * @param {Types} DataTypes
  * @returns {Model}
  */
 module.exports = (sequelize, DataTypes) => {
@@ -68,21 +68,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: '',
       type: DataTypes.STRING,
       comment: '唯一标示',
-      /*
       validate: {
-        isUnique: (value, next) => {
-          const self = this;
-          BlogPosts.find({ where: { slug: value } })
-            .then((post) => {
-              if ((post && !self.id) || (post && self.id !== post.id)) {
-                return next('Slug already in use!');
-              }
-              return next();
-            })
-            .catch((err) => next(err));
-        }
+        isUnique: sequelize.validateIsUnique('slug')
       }
-      */
     },
     sortOrder: {
       allowNull: false,
