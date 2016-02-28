@@ -1,6 +1,7 @@
-/* jshint indent: 2 */
+/* eslint new-cap: [1] */
+/* eslint no-unused-vars: [1] */
 
-module.exports = function(sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   const BlogTags = sequelize.define('BlogTags', {
     id: {
       allowNull: false,

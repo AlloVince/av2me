@@ -33,12 +33,24 @@ const pagination = ({
   let prev = offset === 0 ? 0 : offset - limit;
   let next = offset + limit > total ? total : offset + limit;
   prev = next === total ? total - limit : prev;
+  const path = req.path;
+  const uri = req.url;
   return {
     total,
     offset,
     limit,
-    prev,
-    next
+    prev: {
+      limit,
+      offset: prev,
+      path,
+      uri
+    },
+    next: {
+      limit,
+      offset: next,
+      path,
+      uri
+    }
   };
 };
 

@@ -6,7 +6,7 @@ import logger from 'morgan';
 import cookieParser from 'cookie-parser';
 import bodyParser from 'body-parser';
 import routes from './routes/index';
-import users from './routes/users';
+//import users from './routes/users';
 import posts from './routes/posts';
 import { StandardException, ResourceNotFoundException } from './exceptions';
 
@@ -16,9 +16,6 @@ app.set('views', path.join(__dirname, '/../views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '/../public')));
 
 app.use((req, res, next) => {
@@ -27,8 +24,13 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
   next();
 });
+
+//Body parser需要在CORS后加载
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use('/', routes);
-app.use('/v1/users', users);
+//app.use('/v1/users', users);
 app.use('/v1/posts', posts);
 
 app.use((req, res, next) => {
@@ -63,7 +65,7 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500);
   res.render('error', {
     message: err.message,
-    error: {}
+    error: err
   });
 });
 

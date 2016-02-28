@@ -1,6 +1,8 @@
 import express from 'express';
+import Model from 'sequelize/lib/model';
+/** @type {Model} models.BlogPosts */
 import models from '../models';
-import { ResourceNotFoundException, InvalidArgumentException } from '../exceptions';
+import { ResourceNotFoundException, InvalidArgumentException, UnauthorizedException } from '../exceptions';
 import wrapper from '../utils/wrapper';
 import pagination from '../utils/pagination';
 
@@ -118,7 +120,7 @@ router.get('/', wrapper(async (req, res) => {
 //@formatter:on
 router.get('/:id', wrapper(async (req, res) => {
   const id = req.params.id;
-  const post = await models.BlogPosts.findOne({
+  const post = await BlogPosts.findOne({
     where: {
       id
     },
@@ -144,9 +146,7 @@ router.get('/:id', wrapper(async (req, res) => {
  @swagger
  /posts/{postId}:
    put:
-     summary: Update single user
-     description: |
-       abc
+     summary: Update single post
      tags:
        - Posts
      parameters:
@@ -167,16 +167,59 @@ router.get('/:id', wrapper(async (req, res) => {
          schema:
            type: object
            $ref: '#/definitions/BlogPosts'
- @throws {ResourceNotFoundException} When post not exist
- @throws {InvalidArgumentException}  When input not valid
+ @throws {UnauthorizedException}  Permission not allowed
+ @throws {InvalidArgumentException}  Input invalided
  */
 //@formatter:on
 router.put('/:id', wrapper(async (req, res) => {
   const id = req.params.id;
+  const input = req.body;
+  //try {
+  //  values = JSON.parse(input);
+  //} catch (e) {
+  //  throw new InvalidArgumentException('Input JSON format incorrect');
+  //}
+  //console.log(models.BlogPosts.validate(input));
+
+  await models.BlogPosts.upsert(input);
+  const post = await models.BlogPosts.findById(id);
+  /*
   const post = await models.BlogPosts.findById(id);
   if (!post) {
     throw new ResourceNotFoundException('Post not found');
   }
+  */
+  res.json(post);
+}));
+
+
+//@formatter:off
+/**
+ @swagger
+ /posts:
+   post:
+     summary: Create new post
+     tags:
+       - Posts
+     parameters:
+       - name: body
+         in: body
+         description: Post info
+         required: true
+         schema:
+           $ref: '#/definitions/BlogPosts'
+     responses:
+       200:
+         schema:
+           type: object
+           $ref: '#/definitions/BlogPosts'
+ @throws {UnauthorizedException}  Permission not allowed
+ @throws {InvalidArgumentException}  Input invalided
+ */
+//@formatter:on
+router.post('/', wrapper(async (req, res) => {
+  const input = req.body;
+  const post = await models.BlogPosts.create(input);
   res.json(post);
 }));
 

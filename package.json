@@ -9,7 +9,7 @@
     "start": "NODE_ENV=production node ./bin/www",
     "test": "./node_modules/.bin/babel-node ./node_modules/.bin/_mocha --recursive",
     "coverage": "./node_modules/.bin/babel-node ./node_modules/.bin/isparta cover ./node_modules/.bin/_mocha -- --recursive",
-    "dev": "nodemon --ignore 'node_modules/*' --exec babel-node ./bin/www",
+    "dev": "DEBUG=express:* nodemon --ignore 'node_modules/*' --exec babel-node ./bin/www",
     "swagger": "npm run build && node build/swagger/app.js",
     "swagger-dev": "nodemon --ignore 'node_modules/*' --ignore '**/*.json'  --exec babel-node src/swagger/app.js",
     "lint": "eslint src/app.js",

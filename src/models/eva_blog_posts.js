@@ -1,4 +1,5 @@
-/* jshint indent: 2 */
+/* eslint new-cap: [1] */
+/* eslint no-unused-vars: [1] */
 
 import Model from 'sequelize/lib/model';
 
@@ -7,7 +8,7 @@ import Model from 'sequelize/lib/model';
  * @param DataTypes
  * @returns {Model}
  */
-module.exports = function (sequelize, DataTypes) {
+module.exports = (sequelize, DataTypes) => {
   /**
    * @type {Model} BlogPosts
    */
@@ -62,10 +63,26 @@ module.exports = function (sequelize, DataTypes) {
       comment: '父ID'
     },
     slug: {
+      unique: true,
       allowNull: false,
       defaultValue: '',
       type: DataTypes.STRING,
-      comment: '唯一标示'
+      comment: '唯一标示',
+      /*
+      validate: {
+        isUnique: (value, next) => {
+          const self = this;
+          BlogPosts.find({ where: { slug: value } })
+            .then((post) => {
+              if ((post && !self.id) || (post && self.id !== post.id)) {
+                return next('Slug already in use!');
+              }
+              return next();
+            })
+            .catch((err) => next(err));
+        }
+      }
+      */
     },
     sortOrder: {
       allowNull: false,
@@ -159,6 +176,7 @@ module.exports = function (sequelize, DataTypes) {
   }, {
     tableName: 'eva_blog_posts',
     freezeTableName: true,
+    timestamps: false,
     classMethods: {
       associate: (models) => {
         BlogPosts.hasOne(models.BlogTexts, {
