@@ -160,4 +160,7 @@ export class HttpRequestIOException extends IOException {
 }
 
 export class DatabaseIOException extends IOException {
+  constructor(...args) {
+    super(...args);
+  }
 }

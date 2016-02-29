@@ -6,6 +6,7 @@ import {
   ResourceNotFoundException,
   InvalidArgumentException,
   UnauthorizedException,
+  DatabaseIOException,
   FormInvalidateException
 } from '../exceptions';
 import wrapper from '../utils/wrapper';
@@ -175,7 +176,21 @@ router.get('/:id', wrapper(async (req, res) => {
 router.put('/:id', wrapper(async (req, res) => {
   const id = req.params.id;
   const input = req.body;
-  await models.BlogPosts.upsert(input);
+  const errors = await models.BlogPosts.build(input).validate();
+  if (errors) {
+    throw new FormInvalidateException(errors);
+  }
+
+  const transaction = await models.BlogPosts.sequelize.transaction({
+    autocommit: false
+  });
+  try {
+    await models.BlogPosts.upsert(input, { transaction });
+    transaction.commit();
+  } catch (e) {
+    transaction.rollback();
+    throw new DatabaseIOException(e);
+  }
   const post = await models.BlogPosts.findById(id);
   res.json(post);
 }));
@@ -207,11 +222,23 @@ router.put('/:id', wrapper(async (req, res) => {
 //@formatter:on
 router.post('/', wrapper(async (req, res) => {
   const input = req.body;
+
   const errors = await models.BlogPosts.build(input).validate();
   if (errors) {
     throw new FormInvalidateException(errors);
   }
-  const post = await models.BlogPosts.create(input);
+  const transaction = await models.BlogPosts.sequelize.transaction({
+    autocommit: false
+  });
+
+  let post = {};
+  try {
+    post = await models.BlogPosts.create(input, { transaction });
+    transaction.commit();
+  } catch (e) {
+    transaction.rollback();
+    throw new DatabaseIOException(e);
+  }
   res.json(post);
 }));
 
