@@ -306,7 +306,7 @@ export default class ExSwagger {
           if (exception) {
             template.definitions[key] = ExSwagger._exceptionClassToSwagger(exception);
             if (path && method) {
-              template.paths[path][method].responses[exception.statusCode] = {
+              template.paths[path][method].responses[exception.getStatusCode()] = {
                 description: element.description,
                 schema: {
                   $ref: `#/definitions/${key}`

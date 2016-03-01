@@ -8,7 +8,7 @@ import bodyParser from 'body-parser';
 import routes from './routes/index';
 //import users from './routes/users';
 import posts from './routes/posts';
-import { StandardException, ResourceNotFoundException } from './exceptions';
+import { StandardException, ResourceNotFoundException, InvalidArgumentException } from './exceptions';
 
 const app = express();
 
@@ -42,6 +42,10 @@ app.use((req, res, next) => {
 if (app.get('env') === 'development') {
   //NOTE: 最后的next是必须的
   app.use((err, req, res, next) => {
+    if (err.message === 'invalid json') {
+      //Special handle for Body parser
+      err = new InvalidArgumentException('Invalid JSON');
+    }
     if (!(err instanceof StandardException)) {
       return res.status(500).json({
         code: -1,
